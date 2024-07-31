@@ -1,0 +1,80 @@
+%{
+  ---------------------------------------------------------------------------
+    Name       : "GetMNIST.m"
+    
+    Description: loads Binarized MNIST dataset with with a given hieght and width 
+  
+    Authors: Kalkidan Deme Muleta, Bai-Sun Kong
+  
+    Paper: "RRAM-Based Spiking Neural Network with Target-Modulated
+            Spike-Timing-Dependent Plasticity" published on IEEE Transactions on
+            Biomedical Circuits and Systems.
+%}
+
+
+function [TrainX, TrainY, TestX, TestY] = GetMNIST(H_crp,W_crp, Bth)
+
+H_org = 28;
+W_org = 28;
+ImgSize = H_org*W_org;
+
+MNIST_TrainSet = load("MNIST_TrainSet_Original.txt");
+MNIST_TestSet = load("MNIST_TestSet_Original.txt");
+
+
+MNIST_TrainX = MNIST_TrainSet(:,1:ImgSize);
+MNIST_TrainY = MNIST_TrainSet(:,ImgSize+1:end);
+MNIST_TestX = MNIST_TestSet(:,1:ImgSize);
+MNIST_TestY = MNIST_TestSet(:,ImgSize+1:end);
+
+TrainY = MNIST_TrainY;
+TestY = MNIST_TestY;
+
+meanTrainX = mean(MNIST_TrainX,1);
+meanTestX = mean(MNIST_TestX,1);
+
+TrainX_tmp = reshape(MNIST_TrainX.', H_org, W_org, []);
+TestX_tmp = reshape(MNIST_TestX.', H_org, W_org, []);
+
+r = ceil((H_org - H_crp)/2);
+c = ceil((W_org - W_crp)/2);
+
+TrainX = TrainX_tmp(r+1:r+H_crp, c+1:c+W_crp, :);
+TestX = TestX_tmp(r+1:r+H_crp, c+1:c+W_crp, :);
+TrainX = reshape(TrainX,H_crp*W_crp,[]);
+TestX = reshape(TestX,H_crp*W_crp,[]);
+
+
+meanTrainX_crp = mean(TrainX,2);
+meanTestX_crp = mean(TestX,2);
+
+if(Bth > 0)
+    TrainX = 1*(TrainX>Bth);
+    TestX = 1*(TestX>Bth);
+end
+% % Plot
+% figure()
+% t = tiledlayout(1,2, TileSpacing="compact", Padding="compact");
+% nexttile
+% imshow(reshape(TrainX(:,1), H_crp, W_crp))
+% colormap(parula)
+% nexttile
+% imshow(reshape(TestX(:,1), H_crp, W_crp))
+% colormap(parula)
+% 
+% 
+% figure()
+% t = tiledlayout(2,2, TileSpacing="compact", Padding="compact");
+% nexttile
+% imshow(reshape(meanTrainX, H_org, W_org))
+% colormap(parula)
+% nexttile
+% imshow(reshape(meanTestX, H_org, W_org))
+% colormap(parula)
+% nexttile
+% imshow(reshape(meanTrainX_crp, H_crp, W_crp))
+% colormap(parula)
+% nexttile
+% imshow(reshape(meanTestX_crp, H_crp, W_crp))
+% colormap(parula)
+end
