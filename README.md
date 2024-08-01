@@ -1,4 +1,4 @@
-# MSTDP
+# TSTDP
 
 Implementation of the scheme proposed in the "RRAM-Based Spiking Neural Network with Target-Modulated Spike-Timing-Dependent Plasticity" published on the IEEE Transactions on Biomedical Circuits and Systems.
 
